@@ -1,0 +1,342 @@
+/* Pizza al Trancio, Viale Famagosta 8 — «Si prega di ritirare il numero.»
+   Il sito è il loro muro: intonaco bianco a buccia (img/muro.jpg, dalla loro parete), le lavagnette crema nelle cornici
+   decorate (img/cornice.svg) scritte a pennarello (Pangolin), i cartelli stampati in rosso (Montserrat 800), le foto
+   nelle cornici di legno, il banco d'acciaio coi sassolini numerati. L'insegna in Caprasimo, il testo in Merriweather Sans. */
+
+/* ══════════ reset tecnico (PLUMBING_V 1) ══════════ */
+[hidden] { display: none !important; }
+img { max-width: 100%; height: auto; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+
+/* ══════════ variabili ══════════ */
+:root {
+  --muro: #ECE9E2;
+  --ink: #1C1B19;
+  --ink-2: #4E4943;
+  --pennarello: #161616;
+  --cornice: #1E6A72;
+  --legno: #4A3326;
+  --rosso: #C4223A;
+  --rosso-scuro: #A61D32;
+  --marrone: #7B5A4A;
+  --carta: #FDFCF8;
+  --f-mano: 'Pangolin', 'Comic Sans MS', cursive;
+  --f-insegna: 'Caprasimo', Georgia, serif;
+  --f-cartello: 'Montserrat', Arial, sans-serif;
+  --f-testo: 'Merriweather Sans', system-ui, sans-serif;
+  --gutter: 16px;
+  --max: 1180px;
+  --testata: 60px;
+}
+@media (min-width: 720px) { :root { --gutter: 32px; } }
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: calc(var(--testata) + 16px); }
+body {
+  margin: 0; color: var(--ink);
+  background: var(--muro) url(../img/muro.jpg) repeat;
+  font: 400 1.0625rem/1.65 var(--f-testo);
+  -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+}
+img { display: block; }
+a { color: inherit; }
+p { margin: 0 0 1em; }
+h1, h2, h3 { font-weight: 400; }
+.simboli { position: absolute; width: 0; height: 0; overflow: hidden; }
+.sr { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+.salta-al-testo { position: absolute; left: -9999px; top: 8px; z-index: 100; padding: 10px 14px; background: #fff; font: 700 .9rem/1 var(--f-cartello); }
+.salta-al-testo:focus { left: 8px; }
+:focus-visible { outline: 3px solid var(--cornice); outline-offset: 3px; }
+.link { font: 700 .86rem/1.3 var(--f-cartello); letter-spacing: .04em; text-decoration: underline; text-underline-offset: 3px; }
+
+/* ══════════ testata: l'insegna bianca ══════════ */
+.testata {
+  position: sticky; top: 0; z-index: 50; min-height: var(--testata);
+  display: flex; align-items: center; gap: 16px; padding: 6px var(--gutter);
+  background: #FBFBF9; border-bottom: 1px solid #CFCBC3;
+  box-shadow: 0 2px 0 #E6E2DA, 0 6px 14px rgba(40, 30, 20, .08);
+}
+.insegna { display: inline-flex; align-items: center; gap: .38em; margin: 0; color: var(--marrone); font-family: var(--f-insegna); line-height: 1; text-decoration: none; }
+.insegna__pizza { font-size: 1.85rem; letter-spacing: .03em; text-transform: uppercase; }
+.insegna__al { font-size: .84rem; line-height: .98; }
+.voci { display: none; margin-left: auto; gap: 24px; }
+.voci a { padding: 10px 2px; border-bottom: 2px solid transparent; font: 700 .78rem/1 var(--f-cartello); letter-spacing: .09em; text-transform: uppercase; text-decoration: none; color: var(--ink); }
+.voci a:hover { border-color: var(--rosso); }
+.testata__destra { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.lingue { display: flex; border: 1.5px solid var(--ink); border-radius: 999px; overflow: hidden; }
+.lingue button { min-width: 40px; min-height: 36px; padding: 8px 10px; border: 0; background: transparent; color: var(--ink); font: 700 .75rem/1 var(--f-cartello); letter-spacing: .06em; cursor: pointer; }
+.lingue button[aria-pressed="true"] { background: var(--ink); color: #fff; }
+.burger { width: 44px; height: 44px; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; border: 1.5px solid var(--ink); border-radius: 10px; background: transparent; cursor: pointer; }
+.burger span { display: block; width: 20px; height: 2px; background: var(--ink); }
+.indice-mobile { position: fixed; top: var(--testata); left: 0; right: 0; z-index: 49; display: flex; flex-direction: column; padding: 6px var(--gutter) 16px; background: #FBFBF9; border-bottom: 1px solid #CFCBC3; box-shadow: 0 12px 24px rgba(40, 30, 20, .14); }
+.indice-mobile a { padding: 15px 4px; border-bottom: 1px dashed #D8D3CA; font: 700 .95rem/1 var(--f-cartello); letter-spacing: .07em; text-transform: uppercase; text-decoration: none; }
+@media (min-width: 1020px) {
+  .voci { display: flex; }
+  .testata__destra { margin-left: 18px; }
+  .burger { display: none; }
+}
+@media (max-width: 380px) {
+  .testata { gap: 10px; padding-left: 12px; padding-right: 12px; }
+  .insegna__pizza { font-size: 1.5rem; }
+  .insegna__al { font-size: .76rem; }
+  .lingue button { min-width: 34px; padding: 8px 7px; }
+  .burger { width: 42px; height: 42px; }
+}
+
+/* ══════════ i pezzi del muro ══════════ */
+/* la lavagnetta: crema, scritta a pennarello, nella loro cornice (funghi, castagne, uva, foglie) */
+.lavagna {
+  position: relative; color: var(--pennarello);
+  padding: clamp(18px, 3vw, 36px) clamp(18px, 3.4vw, 42px);
+  background: linear-gradient(135deg, #F6E9C9, #EFDDB2);
+  border: 18px solid var(--cornice); border-image: url(../img/cornice.svg) 18 round;
+  box-shadow: 0 0 0 3px #2A1D16, inset 0 0 0 1.5px rgba(0, 0, 0, .22), 0 12px 26px rgba(40, 30, 20, .22);
+}
+.lavagna::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(115deg, rgba(255, 255, 255, .3) 0 16%, rgba(255, 255, 255, 0) 32%); }
+.lavagna__testo { margin: 0; font: 400 clamp(2.5rem, 6.6vw, 5rem)/1.06 var(--f-mano); text-transform: uppercase; letter-spacing: .01em; }
+.lavagna__grazie { margin: .55em 0 0; font: 400 clamp(1.5rem, 3vw, 2.3rem)/1 var(--f-mano); text-transform: uppercase; }
+.lavagna__piccolo { margin: 0 0 .5em; font: 400 clamp(1.25rem, 2.2vw, 1.6rem)/1.1 var(--f-mano); text-transform: uppercase; color: #3A3632; }
+.lavagna__testo--medio { font-size: clamp(1.75rem, 3.8vw, 2.9rem); line-height: 1.16; }
+.lavagna__testo--enorme { font-size: clamp(2.8rem, 14vw, 7.5rem); line-height: .95; } /* «QUANTA?» è una parola sola: a 320 px col minimo di 3,6rem sbordava */
+.lavagna__righe { margin: .5em 0 0; padding: 0; list-style: none; font: 400 clamp(1.3rem, 2.7vw, 2rem)/1.3 var(--f-mano); text-transform: uppercase; }
+.lavagna__righe li { padding: .22em 0; border-bottom: 2px solid rgba(22, 22, 22, .12); }
+.lavagna__righe li::before { content: "– "; }
+.lavagna__piccolo--giu { margin: .9em 0 0; font-size: clamp(1.05rem, 1.8vw, 1.3rem); }
+.lavagna--titolo { justify-self: start; padding: 14px 26px 16px; }
+.lavagna--titolo .lavagna__testo { font-size: clamp(2rem, 4.6vw, 3.3rem); }
+
+/* il foglio stampato, attaccato col nastro */
+.foglio { position: relative; padding: clamp(20px, 2.6vw, 30px); background: var(--carta); box-shadow: 0 1px 0 #E2DED6, 0 10px 22px rgba(40, 30, 20, .16); }
+.foglio::before, .foglio::after { content: ""; position: absolute; top: -10px; width: 74px; height: 22px; background: rgba(236, 232, 214, .78); box-shadow: 0 1px 2px rgba(0, 0, 0, .08); }
+.foglio::before { left: 18px; transform: rotate(-4deg); }
+.foglio::after { right: 18px; transform: rotate(3deg); }
+.foglio__sopra { margin: 0 0 10px; font: 800 .82rem/1.25 var(--f-cartello); letter-spacing: .1em; text-transform: uppercase; color: var(--rosso-scuro); }
+.foglio__testo { margin: 0 0 12px; }
+
+/* il cartello stampato in rosso, nella busta di plastica */
+.cartello { margin: 0; }
+.cartello__foglio {
+  position: relative; padding: 26px 28px 22px; text-align: center; background: #fff;
+  background-image: linear-gradient(118deg, rgba(255, 255, 255, 0) 0 56%, rgba(255, 255, 255, .6) 61%, rgba(255, 255, 255, 0) 67%), linear-gradient(#fff, #F7F7F5);
+  box-shadow: 0 0 0 1px #E4E1DB, 0 12px 24px rgba(40, 30, 20, .18);
+}
+.cartello figcaption { margin-top: 14px; font: 400 1.08rem/1.3 var(--f-mano); color: var(--ink-2); }
+.cartello__su, .cartello__nome, .cartello__numero, .cartello__giu { margin: 0; font-family: var(--f-cartello); font-weight: 800; text-transform: uppercase; color: var(--rosso); }
+.cartello__su { font-size: clamp(1.15rem, 2.4vw, 1.5rem); line-height: 1.05; }
+.cartello__nome { margin: .05em 0 .1em; font-size: clamp(2.8rem, 6vw, 3.8rem); line-height: 1; letter-spacing: .02em; }
+.cartello__numero { display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 1.05rem; line-height: 1; color: var(--rosso-scuro); }
+.coppa { width: 40px; height: 44px; flex: none; }
+.cartello__giu { margin-top: 12px; font-size: 1.02rem; line-height: 1.2; color: var(--rosso-scuro); }
+.cartello__piu { color: var(--rosso); }
+.cartello--diego { justify-self: start; max-width: 380px; }
+.cartello--diego .cartello__foglio { transform: rotate(-1.5deg); }
+
+/* la foto nella cornice di legno, come le loro */
+.quadro { margin: 0; }
+.quadro__apri { display: block; width: 100%; padding: 10px; border: 0; cursor: zoom-in; background: linear-gradient(145deg, #6B4A33, #3E2A1E); box-shadow: 0 0 0 1px #2A1D16, inset 0 0 0 1px rgba(255, 255, 255, .12), 0 12px 24px rgba(40, 30, 20, .28); }
+.quadro__apri img { width: 100%; }
+.quadro figcaption { margin-top: 10px; font: 400 1.08rem/1.3 var(--f-mano); color: var(--ink-2); }
+
+/* il biglietto di carta, appuntato col nastro */
+.biglietto { position: relative; padding: 24px 22px 18px; background: #FFFEFA; box-shadow: 0 8px 18px rgba(40, 30, 20, .15); transform: rotate(var(--rb, 0deg)); }
+.biglietto::before { content: ""; position: absolute; top: -9px; left: 50%; width: 70px; height: 20px; margin-left: -35px; background: rgba(236, 232, 214, .78); transform: rotate(-2deg); }
+.biglietto__mano { margin: 0; font: 400 1.35rem/1.3 var(--f-mano); }
+.taglio { font-family: Arial, Helvetica, sans-serif; font-style: normal; color: var(--ink-2); }
+
+/* ══════════ il banco d'acciaio ══════════ */
+.banco {
+  position: relative;
+  background:
+    repeating-linear-gradient(180deg, rgba(255, 255, 255, .16) 0 1px, rgba(255, 255, 255, 0) 1px 3px),
+    linear-gradient(180deg, #EEF0F1 0, #D7DBDE 12px, #C6CBCF 55%, #B2B8BD 100%);
+  border-top: 2px solid #F8F9F9;
+  box-shadow: inset 0 -6px 10px rgba(0, 0, 0, .08), 0 -1px 0 #9AA0A5, 0 10px 18px rgba(40, 30, 20, .12);
+}
+.banco::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 10px; background: linear-gradient(180deg, rgba(255, 255, 255, .7), rgba(255, 255, 255, 0)); }
+.banco__dentro { position: relative; max-width: var(--max); margin: 0 auto; padding: clamp(24px, 3vw, 38px) var(--gutter); display: grid; gap: 20px; align-items: start; }
+
+/* i sassolini: la forma dal simbolo, il numero a pennarello sopra */
+.sasso { --s: 84px; position: relative; display: inline-block; flex: none; width: var(--s); transform: rotate(var(--r, 0deg)); }
+.sasso svg { display: block; width: 100%; height: auto; overflow: visible; filter: drop-shadow(0 3px 2px rgba(0, 0, 0, .3)); }
+.sasso b { position: absolute; inset: 0; display: grid; place-items: center; padding-top: 2%; font: 400 calc(var(--s) * .4)/1 var(--f-mano); color: #151515; transform: rotate(var(--t, 0deg)); }
+.sasso--turno { --s: 58px; }
+.sasso--tasca { --s: 50px; }
+.sasso--mio { --s: 96px; }
+/* il sassolino che vola: sotto la testata (50), sopra la tasca (40): quando il mucchio scorre sotto la testata, l'8 ci passa sotto */
+.sasso--volo { position: fixed; left: 0; top: 0; z-index: 45; pointer-events: none; will-change: transform; }
+.firma-attesa .sasso--mio { opacity: 0; }
+
+/* ══════════ IL NUMERO — la copertina ══════════ */
+.attesa { padding-top: clamp(22px, 4vw, 52px); }
+.muro { max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
+.muro--copertina { display: grid; gap: clamp(22px, 3vw, 44px); align-items: center; }
+.lavagna--grande { transform: rotate(-.6deg); }
+.lavagna--grande .lavagna__testo { font-size: clamp(2.5rem, 8.4vw, 5rem); } /* a tutta larghezza (sotto 900 px) il titolo cresce col foglio */
+@media (min-width: 900px) { .lavagna--grande .lavagna__testo { font-size: clamp(2.6rem, 5.6vw, 5rem); } }
+.quadro--copertina { max-width: 560px; transform: rotate(1.2deg); }
+.banco--copertina { margin-top: clamp(30px, 4vw, 52px); }
+.mucchio { position: relative; width: 100%; max-width: 330px; height: 150px; margin-top: 18px; }
+.mucchio .sasso, .mucchio__otto { position: absolute; left: var(--x); top: var(--y); }
+.mucchio__otto { width: 84px; height: 67px; }
+.banco__nota { margin: 0; font: 400 1.3rem/1.3 var(--f-mano); }
+.stato-riga { margin: 10px 0 0; }
+.stato { display: inline-flex; align-items: center; gap: 8px; font: 700 .86rem/1.3 var(--f-cartello); letter-spacing: .03em; }
+.stato::before { content: ""; flex: none; width: 10px; height: 10px; border-radius: 50%; background: #8A857C; }
+.stato.is-aperto::before { background: #2E8B57; box-shadow: 0 0 0 3px rgba(46, 139, 87, .18); }
+.bottoni { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0 0; }
+.bottone { display: inline-flex; align-items: center; justify-content: center; min-height: 46px; padding: 10px 20px; border: 2px solid var(--ink); border-radius: 999px; background: transparent; color: var(--ink); font: 800 .82rem/1.1 var(--f-cartello); letter-spacing: .08em; text-transform: uppercase; text-decoration: none; text-align: center; }
+.bottone:hover { background: var(--ink); color: #fff; }
+.bottone--pieno { background: var(--rosso); border-color: var(--rosso); color: #fff; }
+.bottone--pieno:hover { background: var(--rosso-scuro); border-color: var(--rosso-scuro); }
+.voto { margin: 16px 0 0; font: 700 .9rem/1.3 var(--f-cartello); }
+.voto a { text-decoration: none; }
+.voto b { margin-right: 4px; font: 400 1.7rem/1 var(--f-insegna); color: var(--marrone); }
+@media (min-width: 900px) {
+  .muro--copertina { grid-template-columns: 7fr 5fr; }
+  .banco--copertina .banco__dentro { grid-template-columns: minmax(280px, 4fr) 7fr; grid-template-areas: "mucchio foglio" "nota foglio"; column-gap: clamp(32px, 5vw, 72px); }
+  .banco--copertina .mucchio { grid-area: mucchio; }
+  .banco--copertina .banco__nota { grid-area: nota; }
+  .foglio--copertina { grid-area: foglio; margin-top: -8px; }
+}
+@media (max-width: 560px) {
+  .mucchio { height: 124px; }
+  .mucchio .sasso { --s: 68px; }
+  .mucchio__otto { width: 68px; height: 54px; }
+}
+
+/* ══════════ i capitoli: un turno per ciascuno ══════════ */
+.capitolo { padding-top: clamp(72px, 10vw, 132px); }
+.capitolo__dentro { max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); display: grid; gap: 22px; grid-template-columns: minmax(0, 1fr); }
+.turno { display: flex; align-items: center; gap: 14px; margin: 0; font: 400 1.4rem/1.2 var(--f-mano); color: var(--ink-2); }
+.capitolo__testo p { max-width: 34em; }
+.capitolo__testo p:last-child { margin-bottom: 0; }
+.capitolo__nota { margin: 6px 0 0; font-size: .92rem; color: var(--ink-2); }
+
+@media (min-width: 900px) {
+  .capitolo__dentro { column-gap: clamp(32px, 5vw, 72px); align-items: start; }
+  /* 1 · il forno */
+  /* la foto alta occupa tutte le righe: l'ultima riga (vuota, 1fr) prende lo spazio in più, così i pezzi a sinistra
+     restano vicini invece di spalmarsi sull'altezza della foto */
+  .capitolo--forno .capitolo__dentro { grid-template-columns: 5fr 6fr; grid-template-rows: auto auto auto auto 1fr; grid-template-areas: "turno foto" "titolo foto" "testo foto" "cartello foto" ". foto"; }
+  .capitolo--forno .turno { grid-area: turno; }
+  .capitolo--forno .lavagna--titolo { grid-area: titolo; }
+  .capitolo--forno .capitolo__testo { grid-area: testo; }
+  .capitolo--forno .cartello { grid-area: cartello; margin-top: 18px; }
+  .capitolo--forno .quadro { grid-area: foto; transform: rotate(.8deg); }
+  /* 3 · una pizza sola */
+  .capitolo--pizza .capitolo__dentro { grid-template-columns: 5fr 3.3fr 3.3fr; grid-template-rows: auto auto auto auto 1fr; grid-template-areas: "turno trancio salame" "titolo trancio salame" "testo trancio salame" "nota trancio salame" ". trancio salame"; column-gap: clamp(24px, 3vw, 40px); }
+  .capitolo--pizza .turno { grid-area: turno; }
+  .capitolo--pizza .lavagna--titolo { grid-area: titolo; }
+  .capitolo--pizza .capitolo__testo { grid-area: testo; }
+  .capitolo--pizza .biglietto--origano { grid-area: nota; }
+  .quadro--trancio { grid-area: trancio; transform: rotate(-1.2deg); }
+  .quadro--salame { grid-area: salame; margin-top: 90px; transform: rotate(1.4deg); }
+  /* 4 · Lorenza */
+  .capitolo--lorenza .capitolo__dentro { grid-template-columns: 4fr 5fr 3fr; grid-template-rows: auto auto auto 1fr; grid-template-areas: "carretto turno bottega" "carretto titolo bottega" "carretto testo bottega" "carretto . bottega"; }
+  .capitolo--lorenza .turno { grid-area: turno; }
+  .capitolo--lorenza .lavagna--titolo { grid-area: titolo; }
+  .capitolo--lorenza .capitolo__testo { grid-area: testo; }
+  .quadro--carretto { grid-area: carretto; transform: rotate(-1deg); }
+  .quadro--bottega { grid-area: bottega; margin-top: 40px; transform: rotate(1.2deg); }
+  /* 6 · da asporto */
+  .capitolo--asporto .capitolo__dentro { grid-template-columns: 6fr 5fr; grid-template-rows: auto auto auto 1fr; grid-template-areas: "turno foto" "titolo foto" "testo foto" ". foto"; }
+  .capitolo--asporto .turno { grid-area: turno; }
+  .capitolo--asporto .lavagna--titolo { grid-area: titolo; }
+  .capitolo--asporto .capitolo__testo { grid-area: testo; }
+  .quadro--asporto { grid-area: foto; max-width: 460px; transform: rotate(-1.4deg); }
+  /* 7 · gli orari */
+  .capitolo--orari .capitolo__dentro { grid-template-columns: 6fr 5fr; grid-template-areas: "turno turno" "cartello testo"; }
+  .capitolo--orari .turno { grid-area: turno; }
+  .capitolo--orari .cartello { grid-area: cartello; }
+  .capitolo--orari .capitolo__testo { grid-area: testo; align-self: center; }
+}
+
+/* 2 · l'impasto: una lavagna larga, scritta tutta a mano */
+.lavagna--larga { max-width: 940px; transform: rotate(-.4deg); }
+@media (min-width: 900px) { .capitolo--impasto .lavagna--larga { margin-left: 8%; } }
+
+/* 3 · il biglietto dell'origano */
+.biglietto--origano { justify-self: start; max-width: 360px; --rb: -2deg; }
+
+/* 5 · i clienti di sempre: le recensioni sui biglietti */
+.voto--grande { margin-top: 4px; }
+.voto--grande b { font-size: 2.6rem; }
+.biglietti { display: grid; gap: 30px 26px; margin: 10px 0 0; padding: 0; list-style: none; }
+.biglietto--recensione blockquote { margin: 0; }
+.biglietto--recensione blockquote p { margin: 0; font: italic 400 .98rem/1.62 var(--f-testo); }
+.biglietto__chi { margin: 14px 0 0; font: 400 1.2rem/1.2 var(--f-mano); color: var(--ink-2); }
+.biglietti li:nth-child(1) { --rb: -1.2deg; }
+.biglietti li:nth-child(2) { --rb: .9deg; }
+.biglietti li:nth-child(3) { --rb: -.6deg; }
+.biglietti li:nth-child(4) { --rb: 1.3deg; }
+.biglietti li:nth-child(5) { --rb: -1deg; }
+@media (min-width: 700px) { .biglietti { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 1020px) { .biglietti { grid-template-columns: repeat(3, 1fr); } }
+
+/* 7 · il cartello degli orari */
+.cartello--orari { max-width: 560px; }
+.cartello--orari .cartello__foglio { text-align: left; transform: rotate(.6deg); }
+.cartello__titolo { margin: 0 0 14px; text-align: center; font: 800 clamp(2.3rem, 5vw, 3.4rem)/1 var(--f-cartello); text-transform: uppercase; letter-spacing: .04em; color: var(--rosso); }
+.orari { width: 100%; border-collapse: collapse; font: 700 1rem/1.3 var(--f-cartello); }
+.orari tr { border-bottom: 1.5px dashed #E6BFC6; }
+.orari th { padding: 10px 8px; text-align: left; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+.orari td { padding: 10px 8px; text-align: right; font-variant-numeric: tabular-nums; }
+.orari tr.is-today { background: #FCEFF1; }
+.orari__chiuso td { color: var(--rosso); }
+.cartello__stato { margin: 16px 0 0; text-align: center; }
+@media (max-width: 400px) { .cartello__foglio { padding: 22px 16px 18px; } .orari { font-size: .92rem; } .orari th, .orari td { padding: 9px 4px; } }
+
+/* 8 · tocca all'8: il banco dove torna il sassolino, Quanta?, dove */
+.banco--otto { margin-bottom: clamp(36px, 5vw, 56px); }
+.banco__dentro--otto { display: flex; flex-wrap: wrap; align-items: center; gap: 18px 28px; }
+.turno--otto { font-size: clamp(1.6rem, 3.6vw, 2.5rem); color: var(--ink); }
+.posto { position: relative; display: inline-block; width: 96px; height: 77px; }
+.capitolo__dentro--quanta { gap: clamp(28px, 4vw, 48px); }
+.lavagna--quanta { justify-self: start; max-width: 640px; transform: rotate(.5deg); }
+.citazione { margin: 0; padding: 4px 0 4px 20px; border-left: 4px solid var(--rosso); max-width: 30em; }
+.citazione p { margin: 0; font: italic 400 clamp(1.15rem, 2vw, 1.35rem)/1.5 var(--f-testo); }
+.citazione footer { margin-top: 10px; font: 700 .8rem/1.3 var(--f-cartello); letter-spacing: .07em; text-transform: uppercase; color: var(--ink-2); }
+.dove { display: grid; gap: 30px; }
+.indirizzo { margin: 0 0 10px; font: 400 clamp(1.45rem, 2.3vw, 1.85rem)/1.15 var(--f-insegna); color: var(--marrone); }
+.dati { margin: 14px 0 0; }
+.dati div { display: grid; grid-template-columns: 5.5em 1fr; gap: 10px; padding: 8px 0; border-top: 1px solid #E7E2D8; }
+.dati dt { font: 800 .74rem/1.6 var(--f-cartello); letter-spacing: .09em; text-transform: uppercase; color: var(--ink-2); }
+.dati dd { margin: 0; font-size: .98rem; }
+.quadro--facciata { max-width: 420px; transform: rotate(-.8deg); }
+.mappa { background: #FBFAF6; padding: 10px; box-shadow: 0 12px 24px rgba(40, 30, 20, .2); }
+.mappa iframe { display: block; width: 100%; height: 380px; border: 0; }
+@media (min-width: 900px) {
+  .capitolo__dentro--quanta { grid-template-columns: 7fr 5fr; grid-template-areas: "lavagna citazione" "dove dove"; align-items: center; }
+  .lavagna--quanta { grid-area: lavagna; }
+  .citazione { grid-area: citazione; }
+  .dove { grid-area: dove; grid-template-columns: 4.6fr 3.2fr 4.2fr; align-items: start; }
+}
+
+/* ══════════ la tasca: il vostro numero, in basso a sinistra ══════════ */
+/* in basso a DESTRA: a sinistra copriva «Il vostro numero è l'8» sul banco della copertina (1440×900) */
+.tasca { position: fixed; right: 14px; bottom: 14px; z-index: 40; display: flex; align-items: center; gap: 10px; padding: 8px 16px 8px 10px; background: #FFFEFA; border-radius: 14px; box-shadow: 0 0 0 1px rgba(0, 0, 0, .06), 0 8px 20px rgba(40, 30, 20, .24); }
+.tasca__testo { display: flex; flex-direction: column; font-family: var(--f-mano); line-height: 1.15; }
+.tasca__mio { font-size: .88rem; color: var(--ink-2); }
+.tasca__turno { font-size: 1.08rem; color: var(--ink); }
+@media (max-width: 560px) { .tasca { right: 10px; bottom: 10px; padding: 6px 12px 6px 8px; } .tasca__mio { font-size: .8rem; } .tasca__turno { font-size: .98rem; } .sasso--tasca { --s: 42px; } }
+
+/* ══════════ coda ══════════ */
+.coda { margin-top: clamp(84px, 11vw, 150px); background: #2A1D16; color: #EFE7DA; }
+.coda__dentro { max-width: var(--max); margin: 0 auto; padding: 40px var(--gutter) 56px; display: grid; gap: 14px; }
+.insegna--coda { justify-self: start; padding: 10px 16px; background: #FBFBF9; box-shadow: 0 0 0 1px #CFCBC3; }
+.coda__dove { margin: 6px 0 0; font: 700 .9rem/1.4 var(--f-cartello); letter-spacing: .03em; }
+.coda__cred { margin: 0; max-width: 60em; font-size: .88rem; color: #D6CCBD; }
+.coda a { color: #fff; }
+
+/* ══════════ lightbox ══════════ */
+#lightbox { position: fixed; inset: 0; z-index: 90; display: flex; align-items: center; justify-content: center; padding: 24px; background: rgba(24, 18, 14, .93); }
+#lightbox img { max-width: min(1400px, 100%); max-height: 88vh; width: auto; }
+#lightboxClose { position: absolute; top: 14px; right: 16px; width: 48px; height: 48px; border: 2px solid rgba(255, 255, 255, .6); border-radius: 50%; background: transparent; color: #fff; font-size: 32px; line-height: 1; cursor: pointer; }
+
+/* ══════════ reveal (plumbing): lo stato nascosto solo dietro .js; mai sulla copertina né sui sassolini ══════════ */
+.js .reveal { opacity: 0; }
+.js .reveal.in-view { opacity: 1; }
+html:not(.js) .reveal { opacity: 1; }
+.reduced-motion .reveal { opacity: 1 !important; }
